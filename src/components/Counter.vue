@@ -1,25 +1,37 @@
 <template>
-    <a :href="'https://stats.foldingathome.org/' + type + '/' + id" target="_blank" class="counter" :style="'outline-color:' + color">
-        <img :src="logo" alt="Logo" class="counter__logo">
-        <h1 class="counter__name">{{ name }}</h1>
-        <div :style="'color:' + color + ';' + (loading ? 'opacity: 0.2' : '')" class="counter__count">
-            {{ count.toLocaleString("en-US").replace(/,/g, " ") }}
+    <div :class=" team ? 'counter counter--clickable' : 'counter'" :style="'outline-color:' + color">
+        <img :src="logo" :alt="name" class="counter__logo">
+        <div class="counter__name">{{ name }}</div>
+        <div class="counter__count" :style="'color:' + color">
+            {{ loading ? $t('loading') : formatNumber(count) }}
         </div>
-    </a>
+        <div class="counter__increment" :style="'color:' + color" v-if="team && typeof details !== 'undefined' && details !== null">
+            <span v-if="details.increment > 0">
+                + {{ formatNumber(details.increment) }}
+            </span>
+            <span v-else>&mdash;</span>
+        </div>
+    </div>
 </template>
 
 <script>
     export default {
         name: "Counter",
         props: [
-            "id",
             "name",
-            "logo",
+            "team",
             "count",
+            "logo",
             "color",
+            "details",
             "loading",
-            "type"
-        ]
+        ],
+        methods: {
+            formatNumber(number)
+            {
+                return number.toLocaleString('en-US').replace(/,/g, " ")
+            }
+        },
     }
 </script>
 
@@ -50,15 +62,21 @@
         text-align: center;
     }
 
-    .counter:hover, .counter:focus {
-        /*background: #eeeeee;*/
+    .counter.counter--clickable:hover, .counter.counter--clickable:focus {
         outline-style: solid;
-        outline-width: 5px;
+        outline-width: 2px;
     }
 
     .counter .counter__count {
         font-size: 3rem;
         font-weight: bold;
         margin-top: 1rem;
+        text-transform: uppercase;
+    }
+
+    .counter .counter__increment {
+        font-size: 1.5rem;
+        margin-top: 0.5rem;
+        font-weight: bold;
     }
 </style>
